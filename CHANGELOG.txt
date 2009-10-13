@@ -1,0 +1,5 @@
+# CF Search Highlight Changelog
+
+## 1.0
+- initial release
+- yanked from the cf-advanced-search plugin

@@ -8,9 +8,6 @@ Author: Crowd Favorite
 Author URI: http://crowdfavorite.com 
 */
 
-// @TODO: if first search result is not in the viewport then have it be the "next" result so that it doesn't
-// get missed when jumping to "next", which is actually the 2nd match.
-
 // Init/Config
 	/**
 	 * Toggle search highlighting
