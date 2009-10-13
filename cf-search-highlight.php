@@ -66,11 +66,11 @@ Author URI: http://crowdfavorite.com
 		// by default increase a quoted term's relevance
 		// don't modify it if a modifier has been supplied
 		if($search_optimized) {
-			foreach($terms as &$term) {
+			foreach($terms as $key => $term) {
 				if($term[0] != '>' && $term[0] != '<') {
 					$term = '>'.$term;
 				}
-				$term = '('.$term.')';
+				$terms[$key] = '('.$term.')';
 			}
 		}
 	
@@ -96,9 +96,9 @@ Author URI: http://crowdfavorite.com
 		// try to relegate to main body, this could still fire in the sidebar & nav...
 		if(defined('CFHS_HIGHLIGHTSEARCH') && CFHS_HIGHLIGHTSEARCH && is_search()) {		
 			$terms = cfhs_search_string_to_array($_GET['s'],false);
-			foreach($terms as &$term) {
+			foreach($terms as $key => $term) {
 				if(strpos($term,'"') !== false) {
-					$term = urlencode($term);
+					$terms[$key] = urlencode($term);
 				}
 			}
 			$permalink .= '#'.CFHS_HIGHLIGHT_HASH_PREFIX.implode('+',$terms);
