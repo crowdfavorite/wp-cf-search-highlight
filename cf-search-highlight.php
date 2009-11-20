@@ -128,12 +128,12 @@ jQuery(function($){
 				cfhs_terms.push(this.replace(/(\\")/g,"").replace(/(^\s+|\s+$|\+)/g," "));
 			}
 		});
-		$(".entry-content, .entry-title, .entry-summary").highlight(cfhs_terms);
-		
+		$(".entry-content, .entry-title, .entry-summary, .entry, .title").highlight(cfhs_terms);
+
 		// search bar
 		cfhs_searchbar = $("<div id=\'cfs-search-bar\'></div>");
 		$("<span id=\'cfs-search-cancel\' />").append($("<a href=\'3\'>close</a>").click(function(){
-			$(".entry-content, .entry-title, .entry-summary").unhighlight();
+			$(".entry-content, .entry-title, .entry-summary, .entry, .title").unhighlight();
 			$("#cfs-search-bar").hide();
 			$("body").removeClass("cfs-search");
 			return false;
