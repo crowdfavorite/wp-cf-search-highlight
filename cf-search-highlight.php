@@ -3,7 +3,7 @@
 Plugin Name: CF Search Highlight
 Plugin URI: http://crowdfavorite.com
 Description: Plugin that augments searches by highlighting the searched term in the resulting pages.
-Version: 1.0
+Version: 1.0.1
 Author: Crowd Favorite
 Author URI: http://crowdfavorite.com 
 */
