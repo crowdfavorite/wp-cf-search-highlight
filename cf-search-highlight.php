@@ -122,18 +122,19 @@ jQuery(function($){
 	if(window.location.hash && window.location.hash.match(/#'.CFHS_HIGHLIGHT_HASH_PREFIX.'/)) {
 		// do highlight
 		var cfhs_terms_pre = unescape(window.location.hash.replace("#'.CFHS_HIGHLIGHT_HASH_PREFIX.'","")).split(/(".*?"|\+)/g);
+		var cfhs_targets = "'.apply_filters('cfhs-js-highlight-targets','.entry-content, .entry-title, .entry-summary, .entry, .title').'";
 		cfhs_terms = [];
 		$(cfhs_terms_pre).each(function(i) {
 			if(this.length != 0 && this != undefined && this != "+") {
 				cfhs_terms.push(this.replace(/(\\")/g,"").replace(/(^\s+|\s+$|\+)/g," "));
 			}
 		});
-		$(".entry-content, .entry-title, .entry-summary, .entry, .title").highlight(cfhs_terms);
+		$(cfhs_targets).highlight(cfhs_terms);
 
 		// search bar
 		cfhs_searchbar = $("<div id=\'cfs-search-bar\'></div>");
 		$("<span id=\'cfs-search-cancel\' />").append($("<a href=\'3\'>close</a>").click(function(){
-			$(".entry-content, .entry-title, .entry-summary, .entry, .title").unhighlight();
+			$(cfhs_targets).unhighlight();
 			$("#cfs-search-bar").hide();
 			$("body").removeClass("cfs-search");
 			return false;
