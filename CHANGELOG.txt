@@ -1,5 +1,9 @@
 # CF Search Highlight Changelog
 
+## 1.0.1
+
+- adding ability to augment highlight target blocks via filter
+
 ## 1.0
 - initial release
 - yanked from the cf-advanced-search plugin
