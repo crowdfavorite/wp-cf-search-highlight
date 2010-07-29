@@ -1,5 +1,10 @@
 # CF Search Highlight Changelog
 
+## 1.0.2
+
+- adding a constant to remove the search bar when needed
+- moving the constants to init so themes can modify them via the filters
+
 ## 1.0.1
 
 - adding ability to augment highlight target blocks via filter

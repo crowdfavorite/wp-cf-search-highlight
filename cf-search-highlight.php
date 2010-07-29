@@ -3,7 +3,7 @@
 Plugin Name: CF Search Highlight
 Plugin URI: http://crowdfavorite.com
 Description: Plugin that augments searches by highlighting the searched term in the resulting pages.
-Version: 1.0.1
+Version: 1.0.2
 Author: Crowd Favorite
 Author URI: http://crowdfavorite.com 
 */
@@ -12,14 +12,18 @@ Author URI: http://crowdfavorite.com
 	/**
 	 * Toggle search highlighting
 	 */
-	define('CFHS_HIGHLIGHTSEARCH',apply_filters('cfhs_do_search_highlight',true));
+	function cfhs_early_init() {
+		define('CFHS_HIGHLIGHTSEARCH',apply_filters('cfhs_do_search_highlight',true));
+		define('CFHS_SHOW_SEARCH_BAR',apply_filters('cfhs_show_search_bar', true));
 
-	if(CFHS_HIGHLIGHTSEARCH) {
-		define('CFHS_HIGHLIGHT_HASH_PREFIX',apply_filters('cfhs_search_hightlight_hash_prefix','hl-'));
-		wp_enqueue_script('jquery-highlight','/index.php?cfhs-search-js',array('jquery'),3);
-		wp_enqueue_style('cfs-search-box','/index.php?cfhs-search-css',array(),1,'screen');
+		if(CFHS_HIGHLIGHTSEARCH) {
+			define('CFHS_HIGHLIGHT_HASH_PREFIX',apply_filters('cfhs_search_hightlight_hash_prefix','hl-'));
+			wp_enqueue_script('jquery-highlight','/index.php?cfhs-search-js',array('jquery'),3);
+			wp_enqueue_style('cfs-search-box','/index.php?cfhs-search-css',array(),1,'screen');
+		}
 	}
-
+	add_action('init', 'cfhs_early_init', 1);
+	
 	function cfhs_highlight_init() {
 		if(isset($_GET['cfhs-search-js'])) {
 			cfhs_js();
@@ -130,40 +134,47 @@ jQuery(function($){
 			}
 		});
 		$(cfhs_targets).highlight(cfhs_terms);
+		
+		';
 
-		// search bar
-		cfhs_searchbar = $("<div id=\'cfs-search-bar\'></div>");
-		$("<span id=\'cfs-search-cancel\' />").append($("<a href=\'3\'>close</a>").click(function(){
-			$(cfhs_targets).unhighlight();
-			$("#cfs-search-bar").hide();
-			$("body").removeClass("cfs-search");
-			return false;
-		})).appendTo(cfhs_searchbar);
-		$("<b>Search:</b>").appendTo(cfhs_searchbar);
-		$("<a id=\'cfs-search-previous\'>&laquo; Previous</a>").click(function(){
-			cfhs_next_highlight("prev");
-			return false;
-		}).appendTo(cfhs_searchbar);
-		$("<a id=\'cfs-search-next\'>Next &raquo;</a>").click(function(){
-			cfhs_next_highlight("next");
-			return false;
-		}).appendTo(cfhs_searchbar);
-		$("<span id=\'cfs-search-notice\' />").appendTo(cfhs_searchbar);
-		cfhs_searchbar.wrapInner(\'<div id="cfs-search-bar-inside">\');
+		if(CFHS_SHOW_SEARCH_BAR) {
+			$js .= '
+			// search bar
+			cfhs_searchbar = $("<div id=\'cfs-search-bar\'></div>");
+			$("<span id=\'cfs-search-cancel\' />").append($("<a href=\'3\'>close</a>").click(function(){
+				$(cfhs_targets).unhighlight();
+				$("#cfs-search-bar").hide();
+				$("body").removeClass("cfs-search");
+				return false;
+			})).appendTo(cfhs_searchbar);
+			$("<b>Search:</b>").appendTo(cfhs_searchbar);
+			$("<a id=\'cfs-search-previous\'>&laquo; Previous</a>").click(function(){
+				cfhs_next_highlight("prev");
+				return false;
+			}).appendTo(cfhs_searchbar);
+			$("<a id=\'cfs-search-next\'>Next &raquo;</a>").click(function(){
+				cfhs_next_highlight("next");
+				return false;
+			}).appendTo(cfhs_searchbar);
+			$("<span id=\'cfs-search-notice\' />").appendTo(cfhs_searchbar);
+			cfhs_searchbar.wrapInner(\'<div id="cfs-search-bar-inside">\');
 		
-		$("body").addClass("cfs-search").prepend(cfhs_searchbar);
+			$("body").addClass("cfs-search").prepend(cfhs_searchbar);
 		
-		// Fix this thing to the viewport if it is IE.
-		if($.browser.msie && $.browser.version < 7.0) {
-			function cfsFixSearchBarToViewPortInIE() {
-				$(cfhs_searchbar).css({
-					"position": "absolute",
-					"top": $(window).scrollTop() + "px"
-				});
+			// Fix this thing to the viewport if it is IE.
+			if($.browser.msie && $.browser.version < 7.0) {
+				function cfsFixSearchBarToViewPortInIE() {
+					$(cfhs_searchbar).css({
+						"position": "absolute",
+						"top": $(window).scrollTop() + "px"
+					});
+				}
+				cfsFixSearchBarToViewPortInIE();
+				$(window).scroll(cfsFixSearchBarToViewPortInIE);
 			}
-			cfsFixSearchBarToViewPortInIE();
-			$(window).scroll(cfsFixSearchBarToViewPortInIE);
+			';
 		}
+		$js .= '
 		
 		highlighted_items = $(".highlight");
 		$(highlighted_items[0]).attr("id","highlight-active")
