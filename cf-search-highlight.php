@@ -52,7 +52,7 @@ Author URI: http://crowdfavorite.com
 		$terms = array();
 	
 		// handle slashes
-		if(!get_magic_quotes_gpc()) {
+		if(get_magic_quotes_gpc()) {
 			$string = stripslashes($string);
 		}
 
