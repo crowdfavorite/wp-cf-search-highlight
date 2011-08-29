@@ -3,7 +3,7 @@
 Plugin Name: CF Search Highlight
 Plugin URI: http://crowdfavorite.com
 Description: Plugin that augments searches by highlighting the searched term in the resulting pages.
-Version: 1.0.2
+Version: 1.0.3
 Author: Crowd Favorite
 Author URI: http://crowdfavorite.com 
 */
@@ -237,6 +237,11 @@ jQuery(function($){
 		$highlight_h_padding = '4px';
 		$highlight_v_padding = '2px';
 		
+		/* We need the height of the admin bar as margin for our 
+		search navigation, otherwise the admin bar hides the 
+		search nav */
+		$top_margin = is_admin_bar_showing() ? '28' : '0';
+		
 		$css = '
 body.cfs-search {
 	margin-top: '.$height.'px;
@@ -252,6 +257,7 @@ body.cfs-search {
 	left: 0;
 	line-height: '.$height.'px;
 	margin: 0;
+	margin-top: '.$top_margin.'px;
 	overflow: hidden;
 	position: fixed;
 	top: 0;

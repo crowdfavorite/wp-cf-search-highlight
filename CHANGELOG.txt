@@ -1,5 +1,9 @@
 # CF Search Highlight Changelog
 
+## 1.0.3
+
+- Added conditional margin to the search bar if the WP admin bar is present
+
 ## 1.0.2
 
 - adding a constant to remove the search bar when needed
