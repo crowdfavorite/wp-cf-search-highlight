@@ -86,7 +86,18 @@ jQuery.fn.highlight = function (words, options) {
     if (words.constructor === String) {
         words = [words];
     }
-
+	
+	/** @ BEGIN CF Added
+	 * This was added to stop IE from freezing when a search
+	 * was performed with double-quotes.  No words were found,
+	 * and that was freezing up the browser.
+	 */
+	words = jQuery.grep(words, function(word, i){
+	  return word != '';
+	});
+	if (words.length == 0) { return this; };
+	/** @ END CF Added */
+	
     var flag = settings.caseSensitive ? "" : "i";
     var pattern = "(" + words.join("|") + ")";
     if (settings.wordsOnly) {

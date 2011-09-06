@@ -4,6 +4,7 @@
 
 - Added conditional margin to the search bar if the WP admin bar is present
 - Fixing logic around when to strip slashes
+- *Adjustment to the jQuery Highlight JS:* Made it not break IE browser when a highlight was performed with double-quotes.
 
 ## 1.0.2
 
