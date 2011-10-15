@@ -3,7 +3,7 @@
 Plugin Name: CF Search Highlight
 Plugin URI: http://crowdfavorite.com
 Description: Plugin that augments searches by highlighting the searched term in the resulting pages.
-Version: 1.0.3
+Version: 1.0.4
 Author: Crowd Favorite
 Author URI: http://crowdfavorite.com 
 */
@@ -20,6 +20,10 @@ Author URI: http://crowdfavorite.com
 			define('CFHS_HIGHLIGHT_HASH_PREFIX',apply_filters('cfhs_search_hightlight_hash_prefix','hl-'));
 			wp_enqueue_script('jquery-highlight','/index.php?cfhs-search-js',array('jquery'),3);
 			wp_enqueue_style('cfs-search-box','/index.php?cfhs-search-css',array(),1,'screen');
+			wp_localize_script('jquery-highlight', 'cfhs', array(
+				'targets' => apply_filters('cfhs-js-highlight-targets','.entry-content, .entry-title, .entry-summary, .entry, .title'),
+				'prefix' => CFHS_HIGHLIGHT_HASH_PREFIX,
+			));
 		}
 	}
 	add_action('init', 'cfhs_early_init', 1);
@@ -105,7 +109,8 @@ Author URI: http://crowdfavorite.com
 					$terms[$key] = urlencode($term);
 				}
 			}
-			$permalink .= '#'.CFHS_HIGHLIGHT_HASH_PREFIX.implode('+',$terms);
+			// Split our phrases with pipes
+			$permalink .= '#'.CFHS_HIGHLIGHT_HASH_PREFIX.implode('|',$terms);
 		}
 		return $permalink;
 	}
@@ -123,17 +128,36 @@ Author URI: http://crowdfavorite.com
 			$js .= file_get_contents(WP_PLUGIN_DIR.'/cf-search-highlight/js/jquery.highlight.js');
 			$js .= '
 jQuery(function($){
+	
+	// Do our highlighting if we have the proper hash tag
 	if(window.location.hash && window.location.hash.match(/#'.CFHS_HIGHLIGHT_HASH_PREFIX.'/)) {
-		// do highlight
-		var cfhs_terms_pre = unescape(window.location.hash.replace("#'.CFHS_HIGHLIGHT_HASH_PREFIX.'","")).split(/(".*?"|\+)/g);
-		var cfhs_targets = "'.apply_filters('cfhs-js-highlight-targets','.entry-content, .entry-title, .entry-summary, .entry, .title').'";
-		cfhs_terms = [];
-		$(cfhs_terms_pre).each(function(i) {
-			if(this.length != 0 && this != undefined && this != "+") {
-				cfhs_terms.push(this.replace(/(\\")/g,"").replace(/(^\s+|\s+$|\+)/g," "));
-			}
-		});
-		$(cfhs_targets).highlight(cfhs_terms);
+		
+		// Set our defaults
+		var terms = new Array();
+		var phrase = ""
+
+		// Un-URL encode and get rid of the Highlight prefix
+		var termsString = unescape(window.location.hash.replace("#'.CFHS_HIGHLIGHT_HASH_PREFIX.'","").replace("+", " "));
+
+		// Break apart our different search phrases
+		var differentSearches = termsString.split("|");
+
+		// loop over each of the different search strings
+		for (i = 0; i < differentSearches.length; i++) {
+			// get rid of the quotes
+			phrase = differentSearches[i].replace(/"/g, \'\');
+			
+			// tack our clean phrases onto the terms array
+			terms.push(phrase);
+		}
+
+		// If we don\'t have any terms, then just stop
+		if (terms.length <= 0) {
+			return;
+		}
+
+		// We must have terms, continue on good fellow.
+		$(cfhs.targets).highlight(terms); //, {element:"h1"}
 		
 		';
 

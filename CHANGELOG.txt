@@ -1,5 +1,9 @@
 # CF Search Highlight Changelog
 
+## 1.0.4 (trunk)
+
+- Fixed logic surrounding searches with quoted phrases that was breaking in IE
+
 ## 1.0.3
 
 - Added conditional margin to the search bar if the WP admin bar is present
