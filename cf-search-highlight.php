@@ -102,8 +102,12 @@ Author URI: http://crowdfavorite.com
 	 */
 	function cfhs_search_term_in_permalink($permalink) {
 		// try to relegate to main body, this could still fire in the sidebar & nav...
-		if(defined('CFHS_HIGHLIGHTSEARCH') && CFHS_HIGHLIGHTSEARCH && is_search()) {		
-			$terms = cfhs_search_string_to_array($_GET['s'],false);
+		if(defined('CFHS_HIGHLIGHTSEARCH') && CFHS_HIGHLIGHTSEARCH && is_search()) {	
+			/* @TODO - Some reason &quot; is coming through in the $_GET['s'] 
+			var for Yes! Communities don't have the time right now to troubleshoot
+			that too. */
+			$search = html_entity_decode($_GET['s'], ENT_QUOTES);
+			$terms = cfhs_search_string_to_array($search,false);
 			foreach($terms as $key => $term) {
 				if(strpos($term,'"') !== false) {
 					$terms[$key] = urlencode($term);
@@ -134,10 +138,10 @@ jQuery(function($){
 		
 		// Set our defaults
 		var terms = new Array();
-		var phrase = ""
+		var phrase = "";
 
 		// Un-URL encode and get rid of the Highlight prefix
-		var termsString = unescape(window.location.hash.replace("#'.CFHS_HIGHLIGHT_HASH_PREFIX.'","").replace("+", " "));
+		var termsString = unescape(window.location.hash.replace("#'.CFHS_HIGHLIGHT_HASH_PREFIX.'","").replace(/\+/g, " "));
 
 		// Break apart our different search phrases
 		var differentSearches = termsString.split("|");
@@ -196,6 +200,7 @@ jQuery(function($){
 				cfsFixSearchBarToViewPortInIE();
 				$(window).scroll(cfsFixSearchBarToViewPortInIE);
 			}
+			
 			';
 		}
 		$js .= '
@@ -239,8 +244,15 @@ jQuery(function($){
 					$(cfhs_scroll_tgt).animate({ scrollTop: _next.offset().top-100 });
 				}
 			}
+			if(dir == "first") {
+				$(cfhs_scroll_tgt).animate({ scrollTop: $(highlighted_items[0]).offset().top-100 });
+			}
 			return;
 		}
+		
+		// auto-scroll to the first one
+		cfhs_next_highlight("first");
+		
 	}
 });
 			';
